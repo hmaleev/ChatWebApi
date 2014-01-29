@@ -40,7 +40,7 @@ namespace MongoWebApi.Controllers
                          Id = user["_id"].ToString(),
                          Name = user["Name"].ToString(),
                          Password = user["Password"].ToString(),
-                        // Contacts = user["Contacts"].ToString()
+                         IP = user["IP"].ToString()
                      }).ToList();
             return model;
         }
@@ -58,7 +58,7 @@ namespace MongoWebApi.Controllers
                          Id = user["_id"].ToString(),
                          Name = user["Name"].ToString(),
                          Password = user["Password"].ToString(),
-                     //    Contacts = user["Contacts"].ToString()
+                         IP = user["IP"].ToString()
 
                      }).ToList();
             return model;
@@ -84,8 +84,8 @@ namespace MongoWebApi.Controllers
             IMongoQuery query = Query.EQ("_id", id);
             IMongoUpdate update = Update
                 .Set("Name", user.Name)
-                .Set("Password", user.Password);
-               // .Set("Contacts", user.Contacts);
+                .Set("Password", user.Password)
+                .Set("IP", user.IP);
 
             WriteConcernResult result = users.Update(query, update); 
             return result.UpdatedExisting; 

@@ -85,7 +85,8 @@ namespace MongoWebApi.Controllers
             IMongoUpdate update = Update
                 .Set("Name", user.Name)
                 .Set("Password", user.Password)
-                .Set("IP", user.IP);
+                .Set("IP", user.IP)
+                .Set("Contacts", user.Contacts as BsonArray);
 
             WriteConcernResult result = users.Update(query, update); 
             return result.UpdatedExisting; 

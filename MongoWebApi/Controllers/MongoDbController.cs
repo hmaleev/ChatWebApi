@@ -42,6 +42,7 @@ namespace MongoWebApi.Controllers
                          Password = user["Password"].ToString(),
                          IP = user["IP"].ToString()
                      }).ToList();
+
             return model;
         }
 
@@ -77,6 +78,34 @@ namespace MongoWebApi.Controllers
             return user;
         }
 
+        [HttpPost]
+        public User LogIn(User loggedUser)
+        {
+            User model = new User();
+            var usersList = Database.GetCollection("Users").FindAll().AsEnumerable();
+            model = (from user in usersList
+                     where user["Name"] == loggedUser.Name && user["Password"] == loggedUser.Password
+
+                     select new User
+                     {
+                         Id = user["_id"].ToString(),
+                         Name = user["Name"].ToString(),
+                         Password = user["Password"].ToString(),
+                         IP = user["IP"].ToString()
+
+                     }).FirstOrDefault();
+
+            if (model==null)
+            {
+
+                return null;
+            }
+            else
+            {
+                return model;
+            }
+        }
+
         [HttpPut]
         public bool UpdateUser(string id,User user)
         {
@@ -85,8 +114,7 @@ namespace MongoWebApi.Controllers
             IMongoUpdate update = Update
                 .Set("Name", user.Name)
                 .Set("Password", user.Password)
-                .Set("IP", user.IP)
-                .Set("Contacts", user.Contacts as BsonArray);
+                .Set("IP", user.IP);
 
             WriteConcernResult result = users.Update(query, update); 
             return result.UpdatedExisting; 

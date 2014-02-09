@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,17 +14,5 @@ namespace MongoWebApi.Models
         public string Password { get; set; }
         public string IP { get; set; }
       //  public string Contacts { get; set; }
-
-       //     [BsonSerializer(typeof(List<User>))]
-        public IEnumerable<User> Contacts { get; set; }
-
-        //[BsonConstructor]
-        //public User()
-        //{
-        //    Contacts = new List<User>();
-        //}
-        
-      
     }
-    
 }

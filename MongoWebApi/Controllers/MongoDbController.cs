@@ -1,14 +1,12 @@
-﻿using MongoDB.Bson;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Driver.Linq;
 using MongoWebApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
 
 namespace MongoWebApi.Controllers
 {
@@ -63,6 +61,19 @@ namespace MongoWebApi.Controllers
 
                      }).ToList();
             return model;
+        }
+
+        [HttpGet]
+        public IEnumerable<User> FindUsers(string Name)
+        {
+          
+            List<User> model = new List<User>();
+            var usersList = Database.GetCollection("Users");
+
+            var query = (from c in usersList.AsQueryable<User>()
+                         where c.Name.Contains(Name)
+                         select c);
+            return query;
         }
 
         [HttpPost]

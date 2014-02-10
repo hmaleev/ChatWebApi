@@ -118,12 +118,12 @@ namespace MongoWebApi.Controllers
         }
 
         [HttpPut]
-        public void UpdateUserIP(string name,[FromBody]User user)
+        public void UpdateUserIP(string name,User user)
         {
 
             var users = Database.GetCollection<User>("Users");
             var query = Query.And(
-                Query.EQ("Name", "test")
+                Query.EQ("Name", name)
             );
             var sortBy = SortBy.Descending("Name");
             var update = Update
@@ -141,7 +141,7 @@ namespace MongoWebApi.Controllers
 
             var users = Database.GetCollection<User>("Users");
             var query = Query.And(
-                Query.EQ("Name", "test")
+                Query.EQ("Name", name)
             );
             var sortBy = SortBy.Descending("Name");
             var update = Update<User>.Set(x => x.Contacts,user.Contacts);

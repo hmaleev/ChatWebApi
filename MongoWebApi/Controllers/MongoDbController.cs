@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
 using MongoWebApi.Models;
+using MongoDB.Bson.Serialization;
 
 namespace MongoWebApi.Controllers
 {
@@ -38,7 +39,8 @@ namespace MongoWebApi.Controllers
                          Id = user["_id"].ToString(),
                          Name = user["Name"].ToString(),
                          Password = user["Password"].ToString(),
-                         IP = user["IP"].ToString()
+                         IP = user["IP"].ToString(),
+                         Contacts = BsonSerializer.Deserialize<List<User>>(user["Contacts"].ToJson())
                      }).ToList();
 
             return model;
@@ -49,7 +51,7 @@ namespace MongoWebApi.Controllers
         public IEnumerable<User> GetUser(string Name)
         {
             List<User> model = new List<User>();
-            var usersList = Database.GetCollection("Users").FindAll().AsEnumerable();
+            var usersList = Database.GetCollection("Users").FindAll().ToList();
             model = (from user in usersList
                      where user["Name"] == Name
                      select new User
@@ -57,8 +59,8 @@ namespace MongoWebApi.Controllers
                          Id = user["_id"].ToString(),
                          Name = user["Name"].ToString(),
                          Password = user["Password"].ToString(),
-                         IP = user["IP"].ToString()
-
+                         IP = user["IP"].ToString(),
+                         Contacts = BsonSerializer.Deserialize<List<User>>( user["Contacts"].ToJson())
                      }).ToList();
             return model;
         }
@@ -82,9 +84,8 @@ namespace MongoWebApi.Controllers
             var usersList = Database.GetCollection("Users");
             if (string.IsNullOrEmpty(user.Id))
             {
-                user.Id = ObjectId.GenerateNewId().ToString();
+               user.Id = ObjectId.GenerateNewId().ToString();
                usersList.Insert<User>(user);
-
             }
             return user;
         }
@@ -108,7 +109,6 @@ namespace MongoWebApi.Controllers
 
             if (model==null)
             {
-
                 return null;
             }
             else
@@ -118,17 +118,39 @@ namespace MongoWebApi.Controllers
         }
 
         [HttpPut]
-        public bool UpdateUser(string id,User user)
+        public void UpdateUserIP(string name,[FromBody]User user)
         {
-             var users = Database.GetCollection<User>("Users"); 
-            IMongoQuery query = Query.EQ("_id", id);
-            IMongoUpdate update = Update
-                .Set("Name", user.Name)
-                .Set("Password", user.Password)
-                .Set("IP", user.IP);
 
-            WriteConcernResult result = users.Update(query, update); 
-            return result.UpdatedExisting; 
+            var users = Database.GetCollection<User>("Users");
+            var query = Query.And(
+                Query.EQ("Name", "test")
+            );
+            var sortBy = SortBy.Descending("Name");
+            var update = Update
+                .Set("IP", user.IP);
+            var result = users.FindAndModify(
+                query,
+                sortBy,
+                update,
+                true // return new document
+            );
+        }
+        [HttpPut]
+        public void AddContact(string name, [FromBody]User user)
+        {
+
+            var users = Database.GetCollection<User>("Users");
+            var query = Query.And(
+                Query.EQ("Name", "test")
+            );
+            var sortBy = SortBy.Descending("Name");
+            var update = Update<User>.Set(x => x.Contacts,user.Contacts);
+            var result = users.FindAndModify(
+                query,
+                sortBy,
+                update,
+                true // return new document
+            );
         }
 
         [HttpDelete]

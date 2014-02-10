@@ -13,6 +13,8 @@ namespace MongoWebApi.Models
         public string Name { get; set; }
         public string Password { get; set; }
         public string IP { get; set; }
-      //  public string Contacts { get; set; }
+        //public string Contacts { get; set; }
+        
+        public List<User> Contacts { get; set; }
     }
 }

@@ -8,6 +8,8 @@ using MongoDB.Driver.Builders;
 using MongoDB.Driver.Linq;
 using MongoWebApi.Models;
 using MongoDB.Bson.Serialization;
+using System.Net.Http;
+using System.Net;
 
 namespace MongoWebApi.Controllers
 {
@@ -118,7 +120,7 @@ namespace MongoWebApi.Controllers
         }
 
         [HttpPut]
-        public void UpdateUserIP(string name,User user)
+        public HttpResponseMessage UpdateUserIP(string name, [FromBody]User user)
         {
 
             var users = Database.GetCollection<User>("Users");
@@ -134,6 +136,17 @@ namespace MongoWebApi.Controllers
                 update,
                 true // return new document
             );
+            if (result != null)
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, "Success");
+                return response;
+            }
+            else
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return response;
+            }
+           
         }
         [HttpPut]
         public void AddContact(string name, [FromBody]User user)

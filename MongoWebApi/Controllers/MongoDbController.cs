@@ -26,11 +26,11 @@ namespace MongoWebApi.Controllers
         {
             const string uri = "mongodb://appharbor_7bf89f92-7605-4a7c-963e-b14e263e9abd:37r8l8rtj4j71f71dipff4df4f@ds063158.mongolab.com:63158/appharbor_7bf89f92-7605-4a7c-963e-b14e263e9abd";
             var client = new MongoClient(uri);
-            return  client.GetServer().GetDatabase(new MongoUrl(uri).DatabaseName);
+            return client.GetServer().GetDatabase(new MongoUrl(uri).DatabaseName);
         }
 
         // GET api/GetAll
-        [HttpGet ]
+        [HttpGet]
         public IEnumerable<User> GetAllUsers()
         {
             List<User> model = new List<User>();
@@ -42,7 +42,7 @@ namespace MongoWebApi.Controllers
                          Name = user["Name"].ToString(),
                          Password = user["Password"].ToString(),
                          IP = user["IP"].ToString(),
-                         Contacts = BsonSerializer.Deserialize<List<User>>(user["Contacts"].ToJson())
+                         Contacts = BsonSerializer.Deserialize<List<Contact>>(user["Contacts"].ToJson())
                      }).ToList();
 
             return model;
@@ -62,7 +62,7 @@ namespace MongoWebApi.Controllers
                          Name = user["Name"].ToString(),
                          Password = user["Password"].ToString(),
                          IP = user["IP"].ToString(),
-                         Contacts = BsonSerializer.Deserialize<List<User>>( user["Contacts"].ToJson())
+                         Contacts = BsonSerializer.Deserialize<List<Contact>>(user["Contacts"].ToJson())
                      }).ToList();
             return model;
         }
@@ -70,7 +70,7 @@ namespace MongoWebApi.Controllers
         [HttpGet]
         public IEnumerable<User> FindUsers(string Name)
         {
-          
+
             List<User> model = new List<User>();
             var usersList = Database.GetCollection("Users");
 
@@ -86,8 +86,8 @@ namespace MongoWebApi.Controllers
             var usersList = Database.GetCollection("Users");
             if (string.IsNullOrEmpty(user.Id))
             {
-               user.Id = ObjectId.GenerateNewId().ToString();
-               usersList.Insert<User>(user);
+                user.Id = ObjectId.GenerateNewId().ToString();
+                usersList.Insert<User>(user);
             }
             return user;
         }
@@ -105,11 +105,12 @@ namespace MongoWebApi.Controllers
                          Id = user["_id"].ToString(),
                          Name = user["Name"].ToString(),
                          Password = user["Password"].ToString(),
-                         IP = user["IP"].ToString()
+                         IP = user["IP"].ToString(),
+                         Contacts = BsonSerializer.Deserialize<List<Contact>>(user["Contacts"].ToJson())
 
                      }).FirstOrDefault();
 
-            if (model==null)
+            if (model == null)
             {
                 return null;
             }
@@ -146,10 +147,10 @@ namespace MongoWebApi.Controllers
                 HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
                 return response;
             }
-           
+
         }
         [HttpPut]
-        public void AddContact(string name, [FromBody]User user)
+        public HttpResponseMessage AddContact(string name, [FromBody]User user)
         {
 
             var users = Database.GetCollection<User>("Users");
@@ -157,13 +158,23 @@ namespace MongoWebApi.Controllers
                 Query.EQ("Name", name)
             );
             var sortBy = SortBy.Descending("Name");
-            var update = Update<User>.Set(x => x.Contacts,user.Contacts);
+            var update = Update<User>.Set(x => x.Contacts, user.Contacts);
             var result = users.FindAndModify(
                 query,
                 sortBy,
                 update,
                 true // return new document
             );
+            if (result != null)
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, "Success");
+                return response;
+            }
+            else
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return response;
+            }
         }
 
         [HttpDelete]

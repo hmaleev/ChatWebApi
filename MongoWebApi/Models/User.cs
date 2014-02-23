@@ -15,6 +15,6 @@ namespace MongoWebApi.Models
         public string IP { get; set; }
         //public string Contacts { get; set; }
         
-        public List<User> Contacts { get; set; }
+        public List<Contact> Contacts { get; set; }
     }
 }

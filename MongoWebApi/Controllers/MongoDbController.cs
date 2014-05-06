@@ -149,6 +149,7 @@ namespace MongoWebApi.Controllers
             }
 
         }
+
         [HttpPut]
         public HttpResponseMessage AddContact(string name, [FromBody]User user)
         {
@@ -176,7 +177,58 @@ namespace MongoWebApi.Controllers
                 return response;
             }
         }
+        //---------------------------------------
 
+        [HttpPut]
+        public HttpResponseMessage UpdateMessageHistory(string name, string contactName,  [FromBody]User user)
+        {
+
+            var users = Database.GetCollection<User>("Users");
+            int index = 0;
+
+            foreach (var item in user.Contacts)
+            {
+
+                if (item.Name == contactName)
+                {
+                    break;
+                }
+                index++;
+            }
+
+            var query = Query.And(
+                Query.EQ("Name", name)
+            );
+            var sortBy = SortBy.Descending("Name");
+            var update = Update<User>.Set(x => x.Contacts[index].Messages, user.Contacts[index].Messages);
+            var result = users.FindAndModify(
+                query,
+                sortBy,
+                update,
+                true // return new document
+            );
+
+
+            //var update = Update.Set("Contacts.$.Messages", "new");
+            //users.Update(Query.And(Query.EQ("Name", name)),update);
+            //users.Update(Query.And(Query.EQ("Name", name)), Query.EQ("AnswerList.OptionId", "1")), update);
+
+
+            if (result.ModifiedDocument!=null)
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, "Success");
+                return response;
+            }
+            else
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return response;
+            }
+
+        }
+
+
+        //--------------------------------------
         [HttpDelete]
         public bool DeleteUser(string username)
         {

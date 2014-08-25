@@ -13,11 +13,11 @@ using System.Net;
 
 namespace MongoWebApi.Controllers
 {
-    public class MongoDbController : ApiController
+    public class UserController : ApiController
     {
         public MongoDatabase Database;
 
-        public MongoDbController()
+        public UserController()
         {
             Database = RetreiveMongohqDb();
         }

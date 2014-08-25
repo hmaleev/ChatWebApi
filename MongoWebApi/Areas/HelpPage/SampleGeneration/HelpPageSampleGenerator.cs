@@ -12,6 +12,7 @@ using System.Net.Http.Headers;
 using System.Web.Http.Description;
 using System.Xml.Linq;
 using Newtonsoft.Json;
+using SofiaGTWebAPI.Areas.HelpPage;
 
 namespace MongoWebApi.Areas.HelpPage
 {

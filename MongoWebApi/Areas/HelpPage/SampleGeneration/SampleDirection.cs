@@ -1,4 +1,4 @@
-namespace MongoWebApi.Areas.HelpPage
+namespace SofiaGTWebAPI.Areas.HelpPage
 {
     /// <summary>
     /// Indicates whether the sample is used for request or response

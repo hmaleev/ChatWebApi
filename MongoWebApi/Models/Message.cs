@@ -8,5 +8,10 @@ namespace MongoWebApi.Models
     public class Message
     {
         public string Content { get; set; }
+
+        public Message() 
+        {
+
+        }
     }
 }

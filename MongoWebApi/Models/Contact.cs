@@ -9,8 +9,6 @@ namespace MongoWebApi.Models
     {
         public string Name { get; set; }
         public List<Message> Messages { get; set; }
-        public Contact()
-        {
-        }
+        public string Status { get; set; }
     }
 }

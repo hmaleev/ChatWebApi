@@ -256,6 +256,49 @@ namespace MongoWebApi.Controllers
 
         }
 
+        [HttpPut]
+        public HttpResponseMessage UpdateStatus(string name, string contactName, [FromBody]User user)
+        {
+
+            var users = Database.GetCollection<User>("Users");
+            int index = 0;
+
+            foreach (var item in user.Contacts)
+            {
+
+                if (item.Name == contactName)
+                {
+                    break;
+                }
+                index++;
+            }
+
+            var query = Query.And(
+                Query.EQ("Name", name)
+            );
+            var sortBy = SortBy.Descending("Name");
+            var update = Update<User>.Set(x => x.Contacts[index].Status, user.Contacts[index].Status);
+            var result = users.FindAndModify(
+                query,
+                sortBy,
+                update,
+                true // return new document
+            );
+
+
+            if (result.ModifiedDocument != null)
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, "Success");
+                return response;
+            }
+            else
+            {
+                HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.BadRequest, "Error");
+                return response;
+            }
+
+        }
+
 
         //--------------------------------------
     }
